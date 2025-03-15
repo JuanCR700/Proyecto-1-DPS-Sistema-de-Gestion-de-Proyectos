@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                   Int                  @id @default(autoincrement())
+  nombre               String
+  email                String               @unique
+  password             String
+  rolId                Int
+  rol                  Rol                  @relation(fields: [rolId], references: [id])
+  proyectos            Usuarios_Proyectos[]
+  tareas               Tarea[]
+  comentarios          Comentario[]
+  proyectosGerenciados Proyecto[]           @relation("GerenteProyectos")
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique
+  usuarios Usuario[]
+  permisos Permiso[] @relation("RolPermisos")
+}
+
+model Permiso {
+  id     Int    @id @default(autoincrement())
+  nombre String @unique
+  rolId  Int
+  rol    Rol    @relation("RolPermisos", fields: [rolId], references: [id])
+}
+
+model Proyecto {
+  id          Int                  @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  gerenteId   Int
+  gerente     Usuario              @relation("GerenteProyectos", fields: [gerenteId], references: [id])
+  usuarios    Usuarios_Proyectos[]
+  tareas      Tarea[]
+}
+
+model Usuarios_Proyectos {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int
+  proyectoId Int
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  proyecto   Proyecto @relation(fields: [proyectoId], references: [id])
+}
+
+model Tarea {
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  descripcion String?
+  estado      Estado       @default(PENDIENTE)
+  proyectoId  Int
+  proyecto    Proyecto     @relation(fields: [proyectoId], references: [id])
+  asignadoAId Int?
+  asignadoA   Usuario?     @relation(fields: [asignadoAId], references: [id])
+  comentarios Comentario[]
+}
+
+model Comentario {
+  id        Int      @id @default(autoincrement())
+  contenido String
+  usuarioId Int
+  tareaId   Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  tarea     Tarea    @relation(fields: [tareaId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum Estado {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+}
