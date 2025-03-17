@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,75 +7,178 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id                   Int                  @id @default(autoincrement())
-  nombre               String
-  email                String               @unique
-  password             String
-  rolId                Int
-  rol                  Rol                  @relation(fields: [rolId], references: [id])
-  proyectos            Usuarios_Proyectos[]
-  tareas               Tarea[]
-  comentarios          Comentario[]
-  proyectosGerenciados Proyecto[]           @relation("GerenteProyectos")
-}
-
-model Rol {
-  id       Int       @id @default(autoincrement())
-  nombre   String    @unique
-  usuarios Usuario[]
-  permisos Permiso[] @relation("RolPermisos")
-}
-
-model Permiso {
-  id     Int    @id @default(autoincrement())
-  nombre String @unique
-  rolId  Int
-  rol    Rol    @relation("RolPermisos", fields: [rolId], references: [id])
-}
-
-model Proyecto {
-  id          Int                  @id @default(autoincrement())
-  nombre      String
-  descripcion String?
-  gerenteId   Int
-  gerente     Usuario              @relation("GerenteProyectos", fields: [gerenteId], references: [id])
-  usuarios    Usuarios_Proyectos[]
-  tareas      Tarea[]
-}
-
-model Usuarios_Proyectos {
-  id         Int      @id @default(autoincrement())
-  usuarioId  Int
-  proyectoId Int
-  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
-  proyecto   Proyecto @relation(fields: [proyectoId], references: [id])
-}
-
-model Tarea {
-  id          Int          @id @default(autoincrement())
-  titulo      String
-  descripcion String?
-  estado      Estado       @default(PENDIENTE)
-  proyectoId  Int
-  proyecto    Proyecto     @relation(fields: [proyectoId], references: [id])
-  asignadoAId Int?
-  asignadoA   Usuario?     @relation(fields: [asignadoAId], references: [id])
-  comentarios Comentario[]
-}
-
-model Comentario {
+model comentario {
   id        Int      @id @default(autoincrement())
   contenido String
   usuarioId Int
   tareaId   Int
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
-  tarea     Tarea    @relation(fields: [tareaId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([tareaId], map: "Comentario_tareaId_fkey")
+  @@index([usuarioId], map: "Comentario_usuarioId_fkey")
 }
 
-enum Estado {
+model permiso {
+  id     Int    @id @default(autoincrement())
+  nombre String @unique(map: "Permiso_nombre_key")
+  rolId  Int
+
+  @@index([rolId], map: "Permiso_rolId_fkey")
+}
+
+model permisos {
+  id                       Int       @id @default(autoincrement())
+  rol_id                   Int
+  puede_crear_proyectos    Boolean?  @default(false)
+  puede_editar_proyectos   Boolean?  @default(false)
+  puede_eliminar_proyectos Boolean?  @default(false)
+  puede_crear_tareas       Boolean?  @default(false)
+  puede_editar_tareas      Boolean?  @default(false)
+  puede_eliminar_tareas    Boolean?  @default(false)
+  puede_ver_reportes       Boolean?  @default(false)
+  creado_en                DateTime? @default(now()) @db.Timestamp(0)
+  actualizado_en           DateTime? @default(now()) @db.Timestamp(0)
+  puede_crear_usuarios     Boolean?  @default(false)
+  puede_editar_usuarios    Boolean?  @default(false)
+  puede_eliminar_usuarios  Boolean?  @default(false)
+  puede_ver_usuarios       Boolean?  @default(false)
+
+  @@index([rol_id], map: "rol_id")
+}
+
+model proyecto {
+  id          Int     @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  gerenteId   Int
+
+  @@index([gerenteId], map: "Proyecto_gerenteId_fkey")
+}
+
+model proyectos {
+  id             Int               @id @default(autoincrement())
+  nombre         String            @db.VarChar(100)
+  descripcion    String?           @db.Text
+  fecha_inicio   DateTime?         @db.Date
+  fecha_fin      DateTime?         @db.Date
+  estado         proyectos_estado? @default(Activo)
+  creado_en      DateTime?         @default(now()) @db.Timestamp(0)
+  actualizado_en DateTime?         @default(now()) @db.Timestamp(0)
+}
+
+model rol {
+  id     Int    @id @default(autoincrement())
+  nombre String @unique(map: "Rol_nombre_key")
+}
+
+model roles {
+  id          Int          @id @default(autoincrement())
+  nombre      roles_nombre @unique(map: "nombre")
+  descripcion String?      @db.Text
+}
+
+model tarea {
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  descripcion String?
+  estado      tarea_estado @default(PENDIENTE)
+  proyectoId  Int
+  asignadoAId Int?
+
+  @@index([asignadoAId], map: "Tarea_asignadoAId_fkey")
+  @@index([proyectoId], map: "Tarea_proyectoId_fkey")
+}
+
+model tareas {
+  id                Int               @id @default(autoincrement())
+  proyecto_id       Int
+  titulo            String            @db.VarChar(100)
+  descripcion       String?           @db.Text
+  estado            tareas_estado?    @default(Pendiente)
+  prioridad         tareas_prioridad? @default(Media)
+  asignado_a        Int?
+  fecha_vencimiento DateTime?         @db.Date
+  creado_en         DateTime?         @default(now()) @db.Timestamp(0)
+  actualizado_en    DateTime?         @default(now()) @db.Timestamp(0)
+
+  @@index([asignado_a], map: "asignado_a")
+  @@index([proyecto_id], map: "proyecto_id")
+}
+
+model usuario {
+  id       Int    @id @default(autoincrement())
+  nombre   String
+  email    String @unique(map: "Usuario_email_key")
+  password String
+  rolId    Int
+
+  @@index([rolId], map: "Usuario_rolId_fkey")
+}
+
+model usuario_roles {
+  id         Int @id @default(autoincrement())
+  usuario_id Int
+  rol_id     Int
+
+  @@index([rol_id], map: "rol_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model usuarios {
+  id                 Int              @id @default(autoincrement())
+  nombre_usuario     String           @unique(map: "nombre_usuario") @db.VarChar(50)
+  contrasena         String           @db.VarChar(255)
+  correo_electronico String           @unique(map: "correo_electronico") @db.VarChar(100)
+  nombre_completo    String?          @db.VarChar(100)
+  estado             usuarios_estado? @default(Activo)
+  ultimo_acceso      DateTime?        @db.Timestamp(0)
+  creado_en          DateTime?        @default(now()) @db.Timestamp(0)
+  actualizado_en     DateTime?        @default(now()) @db.Timestamp(0)
+}
+
+model usuarios_proyectos {
+  id         Int @id @default(autoincrement())
+  usuarioId  Int
+  proyectoId Int
+
+  @@index([proyectoId], map: "Usuarios_Proyectos_proyectoId_fkey")
+  @@index([usuarioId], map: "Usuarios_Proyectos_usuarioId_fkey")
+}
+
+enum roles_nombre {
+  Scrum_Master @map("Scrum Master")
+  PM
+  Programador
+  QA
+  Admin
+}
+
+enum tarea_estado {
   PENDIENTE
   EN_PROGRESO
   COMPLETADA
+}
+
+enum tareas_estado {
+  Pendiente
+  En_Progreso @map("En Progreso")
+  Completa
+}
+
+enum proyectos_estado {
+  Activo
+  Inactivo
+  Finalizado
+}
+
+enum tareas_prioridad {
+  Baja
+  Media
+  Alta
+}
+
+enum usuarios_estado {
+  Activo
+  Inactivo
+  Suspendido
 }
