@@ -1,7 +1,6 @@
-// pages/register.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { registerUser  } from '../services/api';
+import axios from 'axios';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -12,7 +11,7 @@ const Register = () => {
   const [success, setSuccess] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     // Limpiar mensajes anteriores
@@ -42,15 +41,19 @@ const Register = () => {
 
     try {
       // Llamada a la API para registrar al usuario
-      const response = await registerUser (name, email, password);
-      console.log('Registro exitoso:', response);
+      const response = await axios.post('/api/register', { name, email, password });
+      if (response.data.message) {
+        // Mensaje de éxito
+        setSuccess('¡Registro exitoso! Redirigiendo al inicio de sesión...');
 
-      // Mensaje de éxito y redirección
-      setSuccess('¡Registro exitoso! Redirigiendo al inicio de sesión...');
-      setTimeout(() => router.push('/login'), 2000); // Redirige después de 2 segundos
+        // Redirigir al login después de 2 segundos
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000); // 2000 milisegundos = 2 segundos
+      }
     } catch (error) {
       // Manejo de errores de la API
-      setError(error.message || 'Error al registrarse.');
+      setError(error.response?.data?.error || 'Error al registrarse.');
     }
   };
 
@@ -63,7 +66,7 @@ const Register = () => {
         {error && <div className="alert alert-danger">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleRegister}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Nombre</label>
             <input
