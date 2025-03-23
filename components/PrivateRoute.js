@@ -16,7 +16,7 @@ const PrivateRoute = ({ children }) => {
 
         if (!email || !password) {
           // Si no hay credenciales, redirigir al login
-          router.push('/auth/login');
+          router.push('/login');
           return;
         }
 
@@ -27,11 +27,11 @@ const PrivateRoute = ({ children }) => {
           setIsAuthenticated(true);
         } else {
           // Si no son válidas, redirigir al login
-          router.push('/auth/login');
+          router.push('/login');
         }
       } catch (error) {
         console.error('Error al verificar la autenticación:', error);
-        router.push('/auth/login');
+        router.push('/login');
       }
     };
 
