@@ -1,7 +1,6 @@
 // pages/login.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { loginUser  } from '../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -23,14 +22,22 @@ const Login = () => {
 
     try {
       // Llamada a la API para iniciar sesión
-      const response = await loginUser (email, password);
-      console.log('Login exitoso:', response);
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
+      const data = await response.json();
 
-      // Redirigir al dashboard después del login
-      router.push('/dashboard');
+      if (response.ok) {
+        console.log('Login exitoso:', data);
+        router.push('/dashboard'); // Redirigir al dashboard después del login
+      } else {
+        setError(data.error || 'Credenciales incorrectas.');
+      }
     } catch (error) {
-      setError(error.message || 'Credenciales incorrectas.');
+      setError('Error al iniciar sesión. Inténtalo de nuevo.');
     }
   };
 
