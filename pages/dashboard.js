@@ -1,9 +1,25 @@
-// pages/dashboard.js
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const router = useRouter();
+
+  // Función para cerrar sesión
+  const handleLogout = async () => {
+    try {
+      // Llamada al endpoint de cierre de sesión
+      await axios.post('/api/logout');
+      console.log('Sesión cerrada exitosamente');
+
+      // Redirigir al usuario a la página de inicio de sesión
+      router.push('/login');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   // Datos de ejemplo para los proyectos
   const projects = [
@@ -25,11 +41,16 @@ const Dashboard = () => {
         <div>
           <span className="me-3">Bienvenido, Usuario</span>
           <Link href="/profile">
-            <button className="btn btn-outline-light">Perfil</button>
+            <button className="btn btn-outline-light me-2">Perfil</button>
           </Link>
+          {/* Botón para cerrar sesión */}
+          <button className="btn btn-primary" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
         </div>
       </header>
 
+      {/* Resto del código del dashboard */}
       <div className="row g-0">
         {/* Menú lateral */}
         <div

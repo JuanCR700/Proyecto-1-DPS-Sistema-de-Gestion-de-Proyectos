@@ -40,3 +40,16 @@ export const registerUser = async (name, email, password) => {
     }
   }
 };
+// Función para cerrar sesión
+export const logoutUser = async () => {
+  try {
+    const response = await apiClient.post('/logout');
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error.response.data; // Lanza el mensaje de error de la respuesta
+    } else {
+      throw new Error('Error de red o servidor. Intenta nuevamente.');
+    }
+  }
+};
