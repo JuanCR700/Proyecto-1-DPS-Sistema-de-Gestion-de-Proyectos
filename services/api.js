@@ -25,12 +25,14 @@ export const loginUser  = async (email, password) => {
 };
 
 // Función para registrar un usuario
-export const registerUser  = async (name, email, password) => {
+export const registerUser = async (name, email, password) => {
   try {
+    console.log('Enviando datos al servidor:', { name, email, password });
     const response = await apiClient.post('/register', { name, email, password });
+    console.log('Respuesta del servidor:', response.data);
     return response.data;
   } catch (error) {
-    // Manejo de errores
+    console.error('Error en la solicitud:', error);
     if (error.response && error.response.data) {
       throw error.response.data; // Lanza el mensaje de error de la respuesta
     } else {
