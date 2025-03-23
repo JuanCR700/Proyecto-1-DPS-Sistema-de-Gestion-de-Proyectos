@@ -1,9 +1,11 @@
+// pages/api/register.js
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
+ 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }

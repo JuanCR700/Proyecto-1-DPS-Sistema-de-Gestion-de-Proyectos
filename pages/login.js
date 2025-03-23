@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+
 import axios from 'axios';
 
 const Login = () => {
@@ -22,6 +23,7 @@ const Login = () => {
 
     try {
       // Llamada a la API para iniciar sesión
+
       const response = await axios.post('/api/login', { email, password });
       if (response.data.user) {
         // Almacenar credenciales en el localStorage
