@@ -1,6 +1,6 @@
 // pages/api/login.js
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -48,4 +48,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Error en el servidor' });
   } finally {
     await prisma.$disconnect();
+  }
 }
