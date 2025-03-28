@@ -65,3 +65,28 @@ export default async function handler(req, res) {
     await prisma.$disconnect();
   }
 }
+import prisma from "../../../services/api";
+import bcrypt from "bcryptjs";
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Método no permitido" });
+  }
+
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "Todos los campos son requeridos" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const user = await prisma.user.create({
+      data: { name, email, password: hashedPassword, role },
+    });
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Error al registrar usuario" });
+  }
+}
