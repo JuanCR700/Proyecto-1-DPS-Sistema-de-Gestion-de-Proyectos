@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -6,15 +7,32 @@ import PrivateRoute from '../components/PrivateRoute';
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [userRole, setUserRole] = useState(null);
   const router = useRouter();
 
-  // Función para cerrar sesión
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const email = localStorage.getItem('email');
+      const password = localStorage.getItem('password');
+      
+      if (email && password) {
+        try {
+          const response = await axios.post('/api/login', { email, password });
+          if (response.data.user) {
+            setUserRole(response.data.user.rol);
+          }
+        } catch (error) {
+          console.error('Error al obtener rol de usuario:', error);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
   const handleLogout = () => {
-    // Eliminar credenciales del localStorage
     localStorage.removeItem('email');
     localStorage.removeItem('password');
-
-    // Redirigir al login
     router.push('/login');
   };
 
@@ -30,44 +48,57 @@ const Dashboard = () => {
             {isSidebarOpen ? 'Ocultar Menú' : 'Mostrar Menú'}
           </button>
           <div>
-            <span className="me-3">Bienvenido, Usuario</span>
+            <span className="me-3">Bienvenido, Usuario ({userRole})</span>
             <Link href="/profile">
               <button className="btn btn-outline-light me-2">Perfil</button>
             </Link>
-            {/* Botón para cerrar sesión */}
+            {userRole === 'ADMIN' && (
+              <Link href="/admin">
+                <button className="btn btn-outline-light me-2">Admin</button>
+              </Link>
+            )}
             <button className="btn btn-primary" onClick={handleLogout}>
               Cerrar sesión
             </button>
           </div>
         </header>
 
+
         {/* Resto del código del dashboard */}
         <div className="row g-0">
-          {/* Menú lateral */}
-          <div
-            className={`col-md-3 bg-light vh-100 p-4 ${isSidebarOpen ? '' : 'd-none d-md-block'}`}
-            style={{ transition: 'all 0.3s' }}
-          >
-            <h3>Dashboard</h3>
-            <ul className="nav flex-column">
-              <li className="nav-item">
-                <Link href="/dashboard" className="nav-link active">
-                  Proyectos
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/tasks" className="nav-link">
-                  Tareas
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/settings" className="nav-link">
-                  Configuración
-                </Link>
-              </li>
-            </ul>
-          </div>
-
+         {/* Menú lateral */}
+         <div
+  className={`col-md-3 bg-light vh-100 p-4 ${isSidebarOpen ? '' : 'd-none d-md-block'}`}
+  style={{ transition: 'all 0.3s' }}
+>
+  <h3>Dashboard</h3>
+  <ul className="nav flex-column">
+    <li className="nav-item">
+      <Link href="/dashboard" className="nav-link active">
+        Proyectos
+      </Link>
+    </li>
+    <li className="nav-item">
+      <Link href="/tasks" className="nav-link">
+        Tareas
+      </Link>
+    </li>
+    {(userRole === 'ADMIN' || userRole === 'GERENTE') && (
+      <li className="nav-item">
+        <Link href="/reports" className="nav-link">
+          Reportes
+        </Link>
+      </li>
+    )}
+    {userRole === 'ADMIN' && (
+      <li className="nav-item">
+        <Link href="/settings" className="nav-link">
+          Configuración
+        </Link>
+      </li>
+    )}
+  </ul>
+</div>
           {/* Contenido principal */}
           <div className="col-md-9 p-4">
             <h1>Mis Proyectos</h1>

@@ -40,24 +40,27 @@ export default async function handler(req, res) {
     // Hashear la contraseña antes de almacenarla
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crear el nuevo usuario en la base de datos
-    const newUser = await prisma.usuarios.create({
-      data: {
-        nombre_usuario: name,
-        correo_electronico: email,
-        contrasena: hashedPassword,
-      },
-    });
+   // Crear el nuevo usuario en la base de datos
+const newUser = await prisma.usuarios.create({
+  data: {
+    nombre_usuario: name,
+    correo_electronico: email,
+    contrasena: hashedPassword,
+    rol: 'MIEMBRO', // Por defecto todos son miembros
+  },
+});
 
-    // Respuesta exitosa
-    res.status(201).json({
-      message: 'Registro exitoso',
-      user: {
-        id: newUser.id,
-        name: newUser.nombre_usuario,
-        email: newUser.correo_electronico,
-      },
-    });
+// Respuesta exitosa
+res.status(201).json({
+  message: 'Registro exitoso',
+  user: {
+    id: newUser.id,
+    name: newUser.nombre_usuario,
+    email: newUser.correo_electronico,
+    rol: newUser.rol,
+  },
+});
+
   } catch (error) {
     console.error('Error en el registro:', error);
     res.status(500).json({ error: 'Error en el servidor' });

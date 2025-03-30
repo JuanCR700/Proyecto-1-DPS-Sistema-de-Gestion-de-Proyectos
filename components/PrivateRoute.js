@@ -2,31 +2,32 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, requiredRole }) => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    // Función para verificar las credenciales del usuario
     const checkAuth = async () => {
       try {
-        // Obtener el correo y la contraseña del localStorage
         const email = localStorage.getItem('email');
         const password = localStorage.getItem('password');
 
         if (!email || !password) {
-          // Si no hay credenciales, redirigir al login
           router.push('/login');
           return;
         }
 
-        // Llamada al backend para verificar las credenciales
         const response = await axios.post('/api/login', { email, password });
         if (response.data.user) {
-          // Si las credenciales son válidas, permitir el acceso
           setIsAuthenticated(true);
+          setUserRole(response.data.user.rol);
+          
+          // Verificar si el usuario tiene el rol requerido
+          if (requiredRole && response.data.user.rol !== requiredRole) {
+            router.push('/unauthorized');
+          }
         } else {
-          // Si no son válidas, redirigir al login
           router.push('/login');
         }
       } catch (error) {
@@ -36,9 +37,8 @@ const PrivateRoute = ({ children }) => {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, requiredRole]);
 
-  // Si el usuario está autenticado, mostrar el contenido protegido
   return isAuthenticated ? children : null;
 };
 
