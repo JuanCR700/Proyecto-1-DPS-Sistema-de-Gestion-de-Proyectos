@@ -64,6 +64,9 @@ model proyectos {
   estado         proyectos_estado? @default(Activo)
   creado_en      DateTime?         @default(now()) @db.Timestamp(0)
   actualizado_en DateTime?         @default(now()) @db.Timestamp(0)
+  gerenteId      Int // Relación con el gerente
+  gerente        usuarios          @relation(fields: [gerenteId], references: [id]) // Relación con el modelo usuarios
+  tareas         tareas[] // Relación inversa con el modelo tareas
 }
 
 model rol {
@@ -96,10 +99,12 @@ model tareas {
   descripcion       String?           @db.Text
   estado            tareas_estado?    @default(Pendiente)
   prioridad         tareas_prioridad? @default(Media)
-  asignado_a        Int?
+  asignado_a        Int? // Usuario asignado a la tarea
+  usuario           usuarios?         @relation(fields: [asignado_a], references: [id]) // Relación con el modelo usuarios
   fecha_vencimiento DateTime?         @db.Date
   creado_en         DateTime?         @default(now()) @db.Timestamp(0)
   actualizado_en    DateTime?         @default(now()) @db.Timestamp(0)
+  proyecto          proyectos         @relation(fields: [proyecto_id], references: [id]) // Relación con el modelo proyectos
 
   @@index([asignado_a], map: "asignado_a")
   @@index([proyecto_id], map: "proyecto_id")
@@ -131,10 +136,12 @@ model usuarios {
   correo_electronico String           @unique(map: "correo_electronico") @db.VarChar(100)
   nombre_completo    String?          @db.VarChar(100)
   estado             usuarios_estado? @default(Activo)
-  rol                Rol              @default(MIEMBRO)
+  rol                Rol              @default(MIEMBRO) // Relación con el enum Rol
   ultimo_acceso      DateTime?        @db.Timestamp(0)
   creado_en          DateTime?        @default(now()) @db.Timestamp(0)
   actualizado_en     DateTime?        @default(now()) @db.Timestamp(0)
+  proyectos          proyectos[] // Relación con los proyectos que gestiona
+  tareas             tareas[] // Relación con las tareas asignadas
 }
 
 model usuarios_proyectos {
