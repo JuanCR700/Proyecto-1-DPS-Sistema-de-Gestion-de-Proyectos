@@ -4,27 +4,69 @@ const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
+    const { userId, gerenteId } = req.query;
+
     try {
+      if (gerenteId) {
+        // Filtrar proyectos creados por el gerente
+        const proyectos = await prisma.proyectos.findMany({
+          where: { gerenteId: parseInt(gerenteId) },
+          include: {
+            gerente: true,
+          },
+        });
+        return res.status(200).json({ proyectos });
+      }
+
+      if (userId) {
+        // Filtrar proyectos asignados al usuario
+        const proyectos = await prisma.proyectos.findMany({
+          where: {
+            tareas: {
+              some: {
+                asignado_a: parseInt(userId),
+              },
+            },
+          },
+          include: {
+            tareas: {
+              include: { usuario: true },
+            },
+            gerente: true,
+          },
+        });
+        return res.status(200).json({ proyectos });
+      }
+
+      // Obtener todos los proyectos
       const proyectos = await prisma.proyectos.findMany({
-        include: { tareas: true },
+        include: {
+          tareas: {
+            include: { usuario: true },
+          },
+          gerente: true,
+        },
       });
-      res.status(200).json({ proyectos });
+
+      return res.status(200).json({ proyectos });
     } catch (error) {
       console.error('Error al obtener proyectos:', error);
-      res.status(500).json({ error: 'Error al obtener proyectos' });
+      return res.status(500).json({ error: 'Error al obtener proyectos' });
     }
   } else if (req.method === 'POST') {
-    const { nombre } = req.body;
+    const { nombre, descripcion, gerenteId } = req.body;
+
     try {
       const nuevoProyecto = await prisma.proyectos.create({
-        data: { nombre },
+        data: { nombre, descripcion, gerenteId: parseInt(gerenteId) },
       });
-      res.status(201).json({ proyecto: nuevoProyecto });
+
+      return res.status(201).json({ proyecto: nuevoProyecto });
     } catch (error) {
       console.error('Error al crear proyecto:', error);
-      res.status(500).json({ error: 'Error al crear proyecto' });
+      return res.status(500).json({ error: 'Error al crear proyecto' });
     }
   } else {
-    res.status(405).json({ error: 'Método no permitido' });
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 }
