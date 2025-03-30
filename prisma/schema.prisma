@@ -131,6 +131,7 @@ model usuarios {
   correo_electronico String           @unique(map: "correo_electronico") @db.VarChar(100)
   nombre_completo    String?          @db.VarChar(100)
   estado             usuarios_estado? @default(Activo)
+  rol                Rol              @default(MIEMBRO)
   ultimo_acceso      DateTime?        @db.Timestamp(0)
   creado_en          DateTime?        @default(now()) @db.Timestamp(0)
   actualizado_en     DateTime?        @default(now()) @db.Timestamp(0)
@@ -181,4 +182,10 @@ enum usuarios_estado {
   Activo
   Inactivo
   Suspendido
+}
+
+enum Rol {
+  ADMIN
+  GERENTE
+  MIEMBRO
 }
