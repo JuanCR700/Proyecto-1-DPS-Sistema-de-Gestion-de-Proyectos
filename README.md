@@ -1,6 +1,6 @@
 # 📌 Gestión de Proyectos
 
-## 🔗 Enlace al Proyecto en Producción
+## 🔗 Enlace del alojamiento del proyecto
 [https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/](https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/)
 
 ## 👥 Integrantes del Proyecto
