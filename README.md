@@ -1,5 +1,13 @@
 # 📌 Gestión de Proyectos
 
+## 🔗 Enlace al Proyecto en Producción
+[https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/](https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/)
+
+## 👥 Integrantes del Proyecto
+- Juan Carlos Ramírez Chávez (RC231487)
+- Mauricio Vladimir Alvarado Abarca (AA230087)
+- Angel Marcelo Delgado Estrada (DE241507)
+
 ## 1. Descripción del Proyecto
 Este proyecto es un sistema de gestión de proyectos que permite a los usuarios registrarse, iniciar sesión, gestionar proyectos, tareas y roles. Utiliza una **API REST** para la gestión de datos y está desarrollado con **React** y **Next.js**.
 
