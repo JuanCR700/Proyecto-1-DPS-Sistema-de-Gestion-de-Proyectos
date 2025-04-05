@@ -3,6 +3,9 @@
 ## 🔗 Enlace del alojamiento del proyecto
 [https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/](https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/)
 
+## 🔗 Enlace video de defensa 
+[https://www.canva.com/design/DAGjvBrQOw8/oLjPiXrTl4_g7t3OFyHz3A/edit?utm_content=DAGjvBrQOw8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton/)
+
 ## 👥 Integrantes del Proyecto
 - Juan Carlos Ramírez Chávez (RC231487)
 - Mauricio Vladimir Alvarado Abarca (AA230087)
