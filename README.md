@@ -4,7 +4,7 @@
 [https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/](https://proyecto-1-dps-sistema-de-gestion-de-proyectos.vercel.app/)
 
 ## 🔗 Enlace video de defensa 
-[https://www.canva.com/design/DAGjvBrQOw8/oLjPiXrTl4_g7t3OFyHz3A/edit?utm_content=DAGjvBrQOw8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton/)
+[https://www.canva.com/design/DAGjvBrQOw8/h_c3DkY_iFgJbDEZhbguBg/watch?utm_content=DAGjvBrQOw8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hf9c8e2978a]
 
 ## 👥 Integrantes del Proyecto
 - Juan Carlos Ramírez Chávez (RC231487)
